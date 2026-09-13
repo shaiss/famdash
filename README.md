@@ -32,6 +32,7 @@ Required env (see `.env.example` — never commit real emails or secrets):
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
 | `CLERK_SECRET_KEY` | Clerk secret key |
 | `ADMIN_EMAIL` | Always-allowed admin email |
+| `ALLOWLIST_EMAILS` | Optional comma-separated extra emails |
 | `FAMPOLL_API_BASE_URL` | FamPoll API base (optional; with key enables live feed) |
 | `FAMPOLL_API_KEY` | FamPoll API bearer token (optional; never commit real values) |
 

@@ -11,7 +11,7 @@ Status of the first runnable dashboard shell. Complements
 | Styling | Tailwind CSS 4 |
 | Auth | Clerk (`@clerk/nextjs`) via `src/proxy.ts` + server checks |
 | Access control | Env allowlist: `ADMIN_EMAIL`, optional `ALLOWLIST_EMAILS` |
-| Feeds | Typed stub clients for **bukz** and **FamPoll** |
+| Feeds | Typed clients: **bukz** stub; **FamPoll** env-gated live (`FAMPOLL_API_*`) |
 
 Default branch for this work: prefer reviewing against the docs branch /
 `main` as the team chooses; keep the repo **private**.
@@ -40,11 +40,10 @@ Shared contract: `src/lib/feeds/types.ts` (`FeedClient`, `FeedItem`, `FeedSnapsh
 
 | Source | Module | Today |
 |--------|--------|-------|
-| bukz | `src/lib/feeds/bukz.ts` | Returns placeholder items |
-| FamPoll | `src/lib/feeds/fampoll.ts` | Returns placeholder items |
+| bukz | `src/lib/feeds/bukz.ts` | Returns placeholder items (stub) |
+| FamPoll | `src/lib/feeds/fampoll.ts` | Live when both `FAMPOLL_API_BASE_URL` and `FAMPOLL_API_KEY` are set; otherwise stub |
 
-Live clients should implement `FeedClient` and read base URL / API key from env
-(`BUKZ_API_*`, `FAMPOLL_API_*` in `.env.example`). Do not commit secrets.
+Do not commit secrets. Bukz remains stubbed until its env path is implemented.
 
 ## Relationship to the long-term architecture
 
@@ -64,7 +63,7 @@ layout) rather than hard-coding more app-specific UI in the dashboard.
    before first deploy. Do not treat a Preview URL as done until cleared.
 2. Create a Clerk application; put real keys only in local/hosting env.
 3. Set `ADMIN_EMAIL` / `ALLOWLIST_EMAILS` in hosting env (never in git).
-4. Replace bukz / FamPoll stubs with live clients behind the same interfaces.
+4. Replace the bukz stub with a live client behind the same interface (FamPoll already env-gated).
 5. Flesh out widget-contract schema + discovery (see
    [`widget-contract.md`](widget-contract.md)).
 6. Stand up first standalone apps (Money, School, …) per

@@ -15,7 +15,7 @@ export default function HomePage() {
         </h1>
         <p className="mt-4 max-w-xl text-lg text-[var(--muted)]">
           A shared surface for family apps. Sign in to open the MVP dashboard
-          shell — bukz and FamPoll feeds are stubbed until live integrations land.
+          shell — bukz stays stubbed; FamPoll is live when its API env vars are set.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Show when="signed-out">

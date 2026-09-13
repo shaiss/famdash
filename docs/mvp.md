@@ -1,0 +1,78 @@
+# MVP implementation notes
+
+Status of the first runnable dashboard shell. Complements
+[`architecture.md`](architecture.md) (product shape) with what is in code today.
+
+## Stack
+
+| Piece | Choice |
+|-------|--------|
+| Framework | Next.js 16 (App Router) + React 19 + TypeScript |
+| Styling | Tailwind CSS 4 |
+| Auth | Clerk (`@clerk/nextjs`) via `src/proxy.ts` + server checks |
+| Access control | Env allowlist: `ADMIN_EMAIL`, optional `ALLOWLIST_EMAILS` |
+| Feeds | Typed stub clients for **bukz** and **FamPoll** |
+
+Default branch for this work: prefer reviewing against the docs branch /
+`main` as the team chooses; keep the repo **private**.
+
+## Routes
+
+| Path | Access |
+|------|--------|
+| `/` | Public landing |
+| `/sign-in`, `/sign-up` | Clerk hosted UI |
+| `/dashboard` | Signed-in **and** allowlisted |
+| `/unauthorized` | Signed-in but not allowlisted |
+| `/docs-hint` | Pointer to repo docs |
+
+## Auth flow
+
+1. `clerkMiddleware()` in `src/proxy.ts` attaches the session.
+2. `src/app/dashboard/layout.tsx` calls `requireAllowlistedUser()`.
+3. Missing session → Clerk sign-in redirect.
+4. Signed in but email not in allowlist → `/unauthorized`.
+5. Allowlist is fail-closed: if neither env var yields emails, nobody is admitted.
+
+## Feed stubs
+
+Shared contract: `src/lib/feeds/types.ts` (`FeedClient`, `FeedItem`, `FeedSnapshot`).
+
+| Source | Module | Today |
+|--------|--------|-------|
+| bukz | `src/lib/feeds/bukz.ts` | Returns placeholder items |
+| FamPoll | `src/lib/feeds/fampoll.ts` | Returns placeholder items |
+
+Live clients should implement `FeedClient` and read base URL / API key from env
+(`BUKZ_API_*`, `FAMPOLL_API_*` in `.env.example`). Do not commit secrets.
+
+## Relationship to the long-term architecture
+
+The MVP is intentionally a **thin host**:
+
+- Dashboard shell + auth gate (this PR)
+- Stub feed adapters standing in for external apps
+- Existing docs remain the source of truth for standalone apps, agents, and the
+  widget contract
+
+Next increments should grow toward the widget contract (discovery, mount,
+layout) rather than hard-coding more app-specific UI in the dashboard.
+
+## Next steps (before / after Security review)
+
+1. **Cipher (Security) review** of auth, allowlist, and env handling — required
+   before first deploy. Do not treat a Preview URL as done until cleared.
+2. Create a Clerk application; put real keys only in local/hosting env.
+3. Set `ADMIN_EMAIL` / `ALLOWLIST_EMAILS` in hosting env (never in git).
+4. Replace bukz / FamPoll stubs with live clients behind the same interfaces.
+5. Flesh out widget-contract schema + discovery (see
+   [`widget-contract.md`](widget-contract.md)).
+6. Stand up first standalone apps (Money, School, …) per
+   [`apps.md`](apps.md).
+
+## Security checklist for deploy
+
+- [ ] Repo remains private
+- [ ] No real emails/PII/secrets in git history for this change
+- [ ] Clerk + allowlist env configured in the host only
+- [ ] Cipher sign-off before linking/promoting Vercel (or other) production

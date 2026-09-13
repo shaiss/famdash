@@ -75,15 +75,17 @@ contract**; apps write widgets against that contract.
 | **Affirmations** | Daily affirmations | Generator | Generator |
 | **Weekend Ideas** | Ideas for the weekend | Scout (web) | Scout |
 
-MVP also stubs **bukz** and **FamPoll** as external feed sources on the dashboard shell.
+MVP surfaces **bukz** (stub) and **FamPoll** (live FeedClient partner) as
+external feeds on the dashboard shell — see [`docs/feeds.md`](docs/feeds.md).
 
 ## Documentation
 
 - [`docs/architecture.md`](docs/architecture.md) — platform, apps, APIs, widgets, agents
 - [`docs/mvp.md`](docs/mvp.md) — MVP implementation notes and next steps
+- [`docs/feeds.md`](docs/feeds.md) — FamPoll feed partnership + `FeedClient` shape
 - [`docs/apps.md`](docs/apps.md) — app catalog
 - [`docs/agents.md`](docs/agents.md) — agent taxonomy
-- [`docs/widget-contract.md`](docs/widget-contract.md) — widget spec
+- [`docs/widget-contract.md`](docs/widget-contract.md) — widget spec (schema TBD)
 
 ## Security
 

@@ -34,28 +34,34 @@ Default branch for this work: prefer reviewing against the docs branch /
 4. Signed in but email not in allowlist → `/unauthorized`.
 5. Allowlist is fail-closed: if neither env var yields emails, nobody is admitted.
 
-## Feed stubs
+## Feeds
 
-Shared contract: `src/lib/feeds/types.ts` (`FeedClient`, `FeedItem`, `FeedSnapshot`).
+Shared types: `src/lib/feeds/types.ts` (`FeedClient`, `FeedItem`, `FeedSnapshot`).
+Partnership, ownership split, href rule C, and env fail-closed behavior:
+[`feeds.md`](feeds.md).
 
 | Source | Module | Today |
 |--------|--------|-------|
 | bukz | `src/lib/feeds/bukz.ts` | Returns placeholder items (stub) |
 | FamPoll | `src/lib/feeds/fampoll.ts` | Live when both `FAMPOLL_API_BASE_URL` and `FAMPOLL_API_KEY` are set; otherwise stub |
 
-Do not commit secrets. Bukz remains stubbed until its env path is implemented.
+Do not commit secrets or real emails. Bukz remains stubbed until its env path
+is implemented. Feed ingest (Contract C) is separate from the TBD
+[widget contract](widget-contract.md).
 
 ## Relationship to the long-term architecture
 
 The MVP is intentionally a **thin host**:
 
-- Dashboard shell + auth gate (this PR)
-- Stub feed adapters standing in for external apps
+- Dashboard shell + auth gate
+- FeedClient adapters for external partners (FamPoll live; bukz stub) — not
+  first-class widget apps yet
 - Existing docs remain the source of truth for standalone apps, agents, and the
   widget contract
 
 Next increments should grow toward the widget contract (discovery, mount,
-layout) rather than hard-coding more app-specific UI in the dashboard.
+layout) rather than hard-coding more app-specific UI in the dashboard. Do not
+stretch FeedClient into a parallel host integration.
 
 ## Next steps (before / after Security review)
 

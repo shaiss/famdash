@@ -126,6 +126,20 @@ built against the **dashboard's widget contract** and gets its data from the
   contract; the dashboard doesn't change to accommodate them.
 - **Resilience** — a failing app degrades to just its own widgets.
 
+## Implementation snapshot (MVP)
+
+A runnable Next.js dashboard host now lives at the repo root (not a rewrite of
+the product model above). It adds:
+
+- Clerk authentication and an env-based email allowlist for `/dashboard`
+- Typed stub feed clients for **bukz** and **FamPoll** (placeholders until live
+  APIs are wired)
+- No production deploy / Preview until Security (Cipher) reviews
+
+See [`mvp.md`](mvp.md) for routes, env vars, and next steps. The long-term
+shape in this document still stands: standalone apps, app APIs, widget
+contract, and agents.
+
 ## Open questions / to confirm
 
 - **Chores → Apollo Sign** _(tentative)_: transcription and exact role of
@@ -134,3 +148,4 @@ built against the **dashboard's widget contract** and gets its data from the
 - Transport and discovery mechanics of the widget contract (how widgets are
   published and discovered at runtime) are intentionally left open here — see
   [`widget-contract.md`](widget-contract.md).
+- Exact bukz / FamPoll API shapes once credentials and docs are available.

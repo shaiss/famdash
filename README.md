@@ -4,10 +4,47 @@
 apps**. Each app harvests its own data, works on its own, and publishes one or
 more **widgets** onto a shared **dashboard**.
 
+This repo is **private**. Do not open it publicly unless Shai explicitly does.
+
+## Current status (MVP)
+
+Next.js App Router dashboard shell with:
+
+- **Clerk** auth on `/dashboard`
+- **Env allowlist** via `ADMIN_EMAIL` (+ optional `ALLOWLIST_EMAILS`)
+- **Typed stub feed clients** for bukz and FamPoll (no live secrets)
+
+Preview / Vercel deploy is **deferred** until Cipher (Security) reviews.
+
+## Local setup
+
+```bash
+cp .env.example .env.local
+# Fill Clerk keys + ADMIN_EMAIL (placeholders only in git)
+npm install
+npm run dev
+```
+
+Required env (see `.env.example` — never commit real emails or secrets):
+
+| Variable | Purpose |
+|----------|---------|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
+| `CLERK_SECRET_KEY` | Clerk secret key |
+| `ADMIN_EMAIL` | Always-allowed admin email |
+| `ALLOWLIST_EMAILS` | Optional comma-separated extra emails |
+
+## Scripts
+
+- `npm run dev` — local development
+- `npm run build` — production build
+- `npm run start` — run production build
+- `npm run lint` — ESLint
+
+## Architecture (product)
+
 The dashboard is a *platform*, not a monolith. It publishes a **widget
-contract** (a spec), and every app writes its widgets against that contract.
-Apps own their widgets end to end — the dashboard just gives them a place to
-render.
+contract**; apps write widgets against that contract.
 
 ```
                  publishes a widget contract (spec)
@@ -15,29 +52,17 @@ render.
    │  DASHBOARD │                                     │   APPS           │
    │ (platform) │  ◀───────────────────────────────  │ (standalone)     │
    └────────────┘        publish their widgets        └──────────────────┘
-        renders widgets on a shared surface                 │
-                                                            │ each app also…
-                                                            ▼
-                                          harvests its own data + exposes a
-                                          clean, documented API surface
 ```
 
-## Core principles
+### Core principles
 
-1. **Apps are standalone.** Every app can run and be used on its own. The
-   dashboard is a consumer of apps, never a dependency they need to function.
-2. **Apps harvest their own data.** Each app owns its ingestion, storage, and
-   domain logic. Data work is done by **agents** (see below).
-3. **Apps expose a clean, documented API.** An app's API surface is how its
-   widgets — and anything else — read its data.
-4. **The dashboard publishes the widget contract.** The dashboard owns one
-   spec that describes how a widget is declared, mounted, sized, and fed data.
-5. **Apps own and publish their widgets.** Each app builds its widgets against
-   the contract and publishes them; the dashboard discovers and renders them.
-6. **Agents do the data work.** Every app is powered by one or more agents of a
-   known type: **Scouts, Generators, Parsers, Harvesters**.
+1. **Apps are standalone.** The dashboard is a consumer of apps, never a dependency they need to function.
+2. **Apps harvest their own data** via agents (Scouts, Generators, Parsers, Harvesters).
+3. **Apps expose a clean, documented API.**
+4. **The dashboard publishes the widget contract.**
+5. **Apps own and publish their widgets.**
 
-## Apps
+### Planned apps
 
 | App | What it does | Data source / integration | Agent type |
 |-----|--------------|---------------------------|------------|
@@ -48,31 +73,24 @@ render.
 | **Affirmations** | Daily affirmations | Generator | Generator |
 | **Weekend Ideas** | Ideas for the weekend | Scout (web) | Scout |
 
-See [`docs/apps.md`](docs/apps.md) for the full catalog.
-
-## Agents
-
-famdash apps are built on four agent types:
-
-- **Scouts** — discover and surface new items from the outside world.
-- **Generators** — create new content from context.
-- **Parsers** — turn unstructured input into structured data.
-- **Harvesters** — pull and sync data from authenticated external services.
-
-See [`docs/agents.md`](docs/agents.md).
+MVP also stubs **bukz** and **FamPoll** as external feed sources on the dashboard shell.
 
 ## Documentation
 
-- [`docs/architecture.md`](docs/architecture.md) — how the platform, apps,
-  APIs, widgets, and agents fit together.
-- [`docs/apps.md`](docs/apps.md) — the app catalog.
-- [`docs/agents.md`](docs/agents.md) — the agent taxonomy.
-- [`docs/widget-contract.md`](docs/widget-contract.md) — the spec the
-  dashboard publishes and apps write against.
+- [`docs/architecture.md`](docs/architecture.md) — platform, apps, APIs, widgets, agents
+- [`docs/mvp.md`](docs/mvp.md) — MVP implementation notes and next steps
+- [`docs/apps.md`](docs/apps.md) — app catalog
+- [`docs/agents.md`](docs/agents.md) — agent taxonomy
+- [`docs/widget-contract.md`](docs/widget-contract.md) — widget spec
+
+## Security
+
+- No PII, real emails, or API secrets in source or docs — placeholders only
+- Allowlist is env-only
+- Cipher (Security) must review before first deploy
+- Keep the repository private unless Shai opens it
 
 ---
 
-> These docs capture the early product and architecture thinking for famdash.
-> They are a living record — transcribed and structured from initial notes — so
-> expect them to evolve as the design firms up. Items marked _(tentative)_ were
-> captured from handwritten notes and may need confirmation.
+> Architecture docs capture early product thinking and will evolve. Items marked
+> _(tentative)_ may need confirmation.

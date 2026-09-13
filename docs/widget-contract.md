@@ -70,6 +70,23 @@ A widget is built against the **widget contract** and pulls its data from its
 while still composing into one dashboard. See
 [`architecture.md`](architecture.md#the-two-contracts).
 
+## Not the same as feed ingest (Contract C)
+
+The MVP dashboard also consumes **external feeds** via a typed `FeedClient`
+(today: FamPoll live, bukz stub). That is a **host projection / Harvester-style
+keyed feed**, not a first-class widget-app publish path.
+
+| Concern | Doc | Versioning |
+|---------|-----|------------|
+| Widget declaration, discovery, mount, layout | **This doc** (schema/transport TBD) | Future **widget-contract** versions |
+| FamPoll recent-feed API + famdash `FeedItem` projection | [`feeds.md`](feeds.md) | FamPoll **Contract C** (separate) |
+
+**Do not invent a parallel host integration** to stand in for the widget
+contract. Keep feed-ingest evolution on Contract C; keep widget plug-in
+evolution on this contract once its schema exists. FamPoll remains a FeedClient
+partner until (if) it later publishes conforming widgets. Upcoming Events Scout
+is a separate app and can coexist.
+
 ## To define next
 
 - The concrete contract schema (fields, types, versioning).
@@ -77,3 +94,5 @@ while still composing into one dashboard. See
   runtime).
 - Versioning strategy for evolving the contract without breaking published
   widgets.
+- (Separate track) Live bukz FeedClient — see [`feeds.md`](feeds.md); does not
+  unblock widget-contract design.

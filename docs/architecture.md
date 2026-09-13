@@ -132,13 +132,25 @@ A runnable Next.js dashboard host now lives at the repo root (not a rewrite of
 the product model above). It adds:
 
 - Clerk authentication and an env-based email allowlist for `/dashboard`
-- Typed stub feed clients for **bukz** and **FamPoll** (placeholders until live
-  APIs are wired)
-- No production deploy / Preview until Security (Cipher) reviews
+- Typed **FeedClient** adapters: **FamPoll** is a live, env-gated partner feed
+  (Harvester-style keyed ingest); **bukz** remains stubbed
+- No production deploy until Security (Cipher) reviews (Preview may still fire
+  on connected PRs)
 
-See [`mvp.md`](mvp.md) for routes, env vars, and next steps. The long-term
-shape in this document still stands: standalone apps, app APIs, widget
-contract, and agents.
+See [`mvp.md`](mvp.md) for routes, env vars, and next steps, and
+[`feeds.md`](feeds.md) for the FamPoll partnership / ingest shape. The
+long-term shape in this document still stands: standalone apps, app APIs,
+widget contract, and agents.
+
+### FamPoll is a feed partner (not a first-class widget app yet)
+
+Product YES from Dash: famdash projects FamPoll's versioned recent-feed API
+into the dashboard shell. Ownership stays split — FamPoll owns domain
+source-of-truth and Contract C; famdash owns projection, permissions, and the
+host UI. That path is **orthogonal** to the widget contract (schema/transport
+still TBD). Do not treat the FeedClient as a parallel widget-host integration.
+The **Upcoming Events** Scout app in [`apps.md`](apps.md) remains a separate
+catalog entry and can coexist. Details: [`feeds.md`](feeds.md).
 
 ## Open questions / to confirm
 
@@ -148,4 +160,5 @@ contract, and agents.
 - Transport and discovery mechanics of the widget contract (how widgets are
   published and discovered at runtime) are intentionally left open here — see
   [`widget-contract.md`](widget-contract.md).
-- Exact bukz / FamPoll API shapes once credentials and docs are available.
+- Bukz live API shape once that env path is implemented (FamPoll live shape is
+  documented in [`feeds.md`](feeds.md)).

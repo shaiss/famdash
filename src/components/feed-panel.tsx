@@ -44,7 +44,18 @@ export function FeedPanel({ snapshot, heading }: FeedPanelProps) {
           <li key={item.id} className="py-4 first:pt-0 last:pb-0">
             <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
               <div>
-                <p className="font-medium text-[var(--ink)]">{item.title}</p>
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4 hover:decoration-[var(--ink)]"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {item.title}
+                  </a>
+                ) : (
+                  <p className="font-medium text-[var(--ink)]">{item.title}</p>
+                )}
                 {item.summary ? (
                   <p className="mt-1 max-w-prose text-sm text-[var(--muted)]">
                     {item.summary}

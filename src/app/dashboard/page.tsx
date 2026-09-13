@@ -17,9 +17,8 @@ export default async function DashboardPage() {
           Family dashboard
         </h1>
         <p className="mt-2 max-w-2xl text-[var(--muted)]">
-          Clerk-gated surface with typed stub feeds for bukz and FamPoll.
-          Live API clients plug into the same interfaces when credentials are
-          ready.
+          Clerk-gated surface with typed feeds. Bukz stays stubbed; FamPoll
+          goes live when FAMPOLL_API_BASE_URL and FAMPOLL_API_KEY are set.
         </p>
       </div>
 

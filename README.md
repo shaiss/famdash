@@ -12,7 +12,7 @@ Next.js App Router dashboard shell with:
 
 - **Clerk** auth on `/dashboard`
 - **Env allowlist** via `ADMIN_EMAIL` (+ optional `ALLOWLIST_EMAILS`)
-- **Typed stub feed clients** for bukz and FamPoll (no live secrets)
+- **Typed feed clients** — bukz stubbed; FamPoll live behind `FAMPOLL_API_*` env vars
 
 Preview / Vercel deploy is **deferred** until Cipher (Security) reviews.
 
@@ -32,7 +32,8 @@ Required env (see `.env.example` — never commit real emails or secrets):
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
 | `CLERK_SECRET_KEY` | Clerk secret key |
 | `ADMIN_EMAIL` | Always-allowed admin email |
-| `ALLOWLIST_EMAILS` | Optional comma-separated extra emails |
+| `FAMPOLL_API_BASE_URL` | FamPoll API base (optional; with key enables live feed) |
+| `FAMPOLL_API_KEY` | FamPoll API bearer token (optional; never commit real values) |
 
 ## Scripts
 

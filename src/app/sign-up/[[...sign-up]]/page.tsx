@@ -1,14 +1,24 @@
 import { SignUp } from "@clerk/nextjs";
 
+const clerkTouchAppearance = {
+  elements: {
+    formButtonPrimary: "min-h-11",
+    socialButtonsBlockButton: "min-h-11",
+    footerActionLink: "inline-flex min-h-11 items-center",
+    formFieldInput: "min-h-11",
+  },
+} as const;
+
 export default function SignUpPage() {
   return (
     <main className="flex min-h-full items-center justify-center overflow-visible px-4 py-16 sm:px-8">
-      <div className="w-full max-w-[25rem] overflow-visible [&_button]:min-h-11 [&_a]:min-h-11 [&_a]:inline-flex [&_a]:items-center">
+      <div className="w-full max-w-[25rem] overflow-visible">
         <SignUp
           routing="path"
           path="/sign-up"
           signInUrl="/sign-in"
           forceRedirectUrl="/dashboard"
+          appearance={clerkTouchAppearance}
         />
       </div>
     </main>

@@ -41,34 +41,49 @@ export function FeedPanel({ snapshot, heading }: FeedPanelProps) {
 
       <ul className="divide-y divide-[var(--line)]">
         {snapshot.items.map((item) => (
-          <li key={item.id} className="py-4 first:pt-0 last:pb-0">
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-              <div>
-                {item.href ? (
-                  <a
-                    href={item.href}
-                    className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4 hover:decoration-[var(--ink)]"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    {item.title}
-                  </a>
-                ) : (
-                  <p className="font-medium text-[var(--ink)]">{item.title}</p>
-                )}
-                {item.summary ? (
-                  <p className="mt-1 max-w-prose text-sm text-[var(--muted)]">
-                    {item.summary}
-                  </p>
-                ) : null}
-              </div>
-              <time
-                dateTime={item.occurredAt}
-                className="shrink-0 text-xs text-[var(--muted)]"
+          <li key={item.id} className="first:pt-0 last:pb-0">
+            {item.href ? (
+              <a
+                href={item.href}
+                className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 -mx-2 rounded-md px-2 outline-offset-2 hover:bg-[var(--surface)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+                rel="noopener noreferrer"
+                target="_blank"
               >
-                {formatWhen(item.occurredAt)}
-              </time>
-            </div>
+                <div>
+                  <span className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">
+                    {item.title}
+                  </span>
+                  {item.summary ? (
+                    <p className="mt-1 max-w-prose text-sm text-[var(--muted)] no-underline">
+                      {item.summary}
+                    </p>
+                  ) : null}
+                </div>
+                <time
+                  dateTime={item.occurredAt}
+                  className="shrink-0 text-xs text-[var(--muted)]"
+                >
+                  {formatWhen(item.occurredAt)}
+                </time>
+              </a>
+            ) : (
+              <div className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                <div>
+                  <p className="font-medium text-[var(--ink)]">{item.title}</p>
+                  {item.summary ? (
+                    <p className="mt-1 max-w-prose text-sm text-[var(--muted)]">
+                      {item.summary}
+                    </p>
+                  ) : null}
+                </div>
+                <time
+                  dateTime={item.occurredAt}
+                  className="shrink-0 text-xs text-[var(--muted)]"
+                >
+                  {formatWhen(item.occurredAt)}
+                </time>
+              </div>
+            )}
           </li>
         ))}
       </ul>

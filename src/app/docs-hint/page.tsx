@@ -27,7 +27,7 @@ export default function DocsHintPage() {
         </ul>
         <Link
           href="/"
-          className="mt-8 inline-block text-[var(--accent)] underline-offset-4 hover:underline"
+          className="touch-link mt-6 text-[var(--accent)] underline-offset-4 hover:underline"
         >
           Back home
         </Link>

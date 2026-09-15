@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Source_Sans_3, JetBrains_Mono } from "next/font/google";
 import { Providers } from "@/components/app-shell";
 import "./globals.css";
@@ -22,6 +22,13 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "famdash",
   description: "Family dashboard — widgets from standalone apps",
+};
+
+/** viewport-fit=cover so safe-area insets apply on notched iPhones. */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

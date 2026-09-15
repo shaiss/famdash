@@ -2,13 +2,15 @@ import { SignIn } from "@clerk/nextjs";
 
 export default function SignInPage() {
   return (
-    <main className="flex min-h-full items-center justify-center px-4 py-16">
-      <SignIn
-        routing="path"
-        path="/sign-in"
-        signUpUrl="/sign-up"
-        forceRedirectUrl="/dashboard"
-      />
+    <main className="flex min-h-full items-center justify-center overflow-visible px-4 py-16 sm:px-8">
+      <div className="w-full max-w-[25rem] overflow-visible [&_button]:min-h-11 [&_a]:min-h-11 [&_a]:inline-flex [&_a]:items-center">
+        <SignIn
+          routing="path"
+          path="/sign-in"
+          signUpUrl="/sign-up"
+          forceRedirectUrl="/dashboard"
+        />
+      </div>
     </main>
   );
 }

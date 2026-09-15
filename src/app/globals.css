@@ -16,6 +16,7 @@
     ),
     radial-gradient(90% 70% at 100% 10%, #d7e0ea 0%, transparent 48%),
     linear-gradient(180deg, #eef3ef 0%, #e3ebe6 100%);
+  --tap-min: 2.75rem; /* 44px — Apple HIG / WCAG mobile target */
 }
 
 @theme inline {
@@ -25,8 +26,49 @@
   --font-mono: var(--font-mono);
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   background: var(--wash);
   color: var(--ink);
   min-height: 100vh;
+  min-height: 100dvh;
+  /* Keep controls tappable near notches / home indicator */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* Faster taps on iOS Safari / Chrome; avoid double-tap zoom delay */
+a,
+button,
+[role="button"],
+summary,
+label,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+/* Shared ~44×44 minimum hit target for primary controls */
+.touch-target {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  min-width: var(--tap-min);
+}
+
+/* Text-style links that still need a usable finger target */
+.touch-link {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding-block: 0.5rem;
 }

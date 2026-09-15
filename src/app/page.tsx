@@ -22,7 +22,7 @@ export default function HomePage() {
             <SignInButton mode="redirect">
               <button
                 type="button"
-                className="rounded-md bg-[var(--accent)] px-4 py-2.5 font-medium text-[var(--accent-ink)] transition hover:opacity-90"
+                className="touch-target rounded-md bg-[var(--accent)] px-5 font-medium text-[var(--accent-ink)] transition hover:opacity-90"
               >
                 Sign in to dashboard
               </button>
@@ -31,14 +31,14 @@ export default function HomePage() {
           <Show when="signed-in">
             <Link
               href="/dashboard"
-              className="rounded-md bg-[var(--accent)] px-4 py-2.5 font-medium text-[var(--accent-ink)] transition hover:opacity-90"
+              className="touch-target rounded-md bg-[var(--accent)] px-5 font-medium text-[var(--accent-ink)] transition hover:opacity-90"
             >
               Go to dashboard
             </Link>
           </Show>
           <Link
             href="/docs-hint"
-            className="rounded-md border border-[var(--line)] bg-[var(--surface)]/70 px-4 py-2.5 text-[var(--ink)] transition hover:bg-[var(--surface)]"
+            className="touch-target rounded-md border border-[var(--line)] bg-[var(--surface)]/70 px-5 text-[var(--ink)] transition hover:bg-[var(--surface)]"
           >
             Architecture notes
           </Link>

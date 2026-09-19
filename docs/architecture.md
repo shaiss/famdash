@@ -132,8 +132,9 @@ A runnable Next.js dashboard host now lives at the repo root (not a rewrite of
 the product model above). It adds:
 
 - Clerk authentication and an env-based email allowlist for `/dashboard`
-- Typed **FeedClient** adapters: **FamPoll** is a live, env-gated partner feed
-  (Harvester-style keyed ingest); **bukz** remains stubbed
+- Typed **FeedClient** adapters: **FamPoll** and **Bukz** are live, env-gated
+  partner feeds (Harvester-style keyed ingest); each fails closed to placeholders
+  when its API env vars are unset
 - No production deploy until Security (Cipher) reviews (Preview may still fire
   on connected PRs)
 
@@ -160,5 +161,5 @@ catalog entry and can coexist. Details: [`feeds.md`](feeds.md).
 - Transport and discovery mechanics of the widget contract (how widgets are
   published and discovered at runtime) are intentionally left open here — see
   [`widget-contract.md`](widget-contract.md).
-- Bukz live API shape once that env path is implemented (FamPoll live shape is
-  documented in [`feeds.md`](feeds.md)).
+- Bukz v0 feed map (kinds, no money figures, no PII) is locked in
+  [`feeds.md`](feeds.md). FamPoll live shape is unchanged in that doc.

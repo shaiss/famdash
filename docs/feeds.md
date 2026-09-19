@@ -32,7 +32,7 @@ separate from future **widget-contract** versions (owned by the dashboard).
 
 Shared TypeScript types live in `src/lib/feeds/types.ts`. Implementations:
 `src/lib/feeds/fampoll.ts` (live + fail-closed stub) and
-`src/lib/feeds/bukz.ts` (stub only).
+`src/lib/feeds/bukz.ts` (live + fail-closed stub).
 
 ### Types
 
@@ -109,9 +109,73 @@ fields without a famdash release; clients must stay forward-compatible.
 
 ### Bukz
 
-**Bukz remains stub.** Same `FeedClient` / `FeedItem` types; no live env path
-yet. Placeholders `BUKZ_API_BASE_URL` / `BUKZ_API_KEY` may appear in
-`.env.example` for a future client.
+Bukz owns the **domain source of truth** for family finance and the
+**versioned feed** (`GET /api/feed/recent`). famdash does **not** own ledger
+state. It **projects** a recent-feed slice into dashboard `FeedItem`s under
+famdash permissions and UI. Same shared contract as the FamPoll consumer —
+no parallel GraphQL layer.
+
+The live path is behind `BUKZ_API_*` and **fails closed**. Do not invent
+ledger numbers, balances, or sample money figures and present them as real.
+Stub copy may say it is a placeholder. Live titles and summaries come only
+from upstream JSON after the v0 projection rules below.
+
+When **both** env vars are set (env-only; never commit real values):
+
+1. `GET {BUKZ_API_BASE_URL}/api/feed/recent?limit=`
+2. Header: `Authorization: Bearer {BUKZ_API_KEY}`
+3. Normalize upstream JSON into `FeedItem[]` (array or thin wrappers:
+   `items` / `data` / `feed` / `results`). Unknown fields are ignored.
+4. Snapshot `mode: "live"`.
+
+If either `BUKZ_API_BASE_URL` or `BUKZ_API_KEY` is missing, fail **closed**
+to stub items (`mode: "stub"`). The dashboard must not throw for missing
+env. Upstream request failure with credentials present stays `mode: "live"`
+with an error item + note — still no key, email, or upstream body leakage.
+
+| Variable | Role |
+|----------|------|
+| `BUKZ_API_BASE_URL` | Bukz API origin (placeholder in `.env.example`) |
+| `BUKZ_API_KEY` | Bearer token for the feed (placeholder only in git) |
+
+#### v0 item kinds (locked)
+
+Every stub item and every live-normalized item sets `meta.kind` to exactly
+one of:
+
+| `meta.kind` | Label (no figures) |
+|-------------|--------------------|
+| `cash_outlook` | Cash outlook |
+| `uncategorized` | Uncategorized |
+| `bill_coverage` | Bill coverage |
+| `budget_funding` | Budget funding |
+| `variance_flag` | Variance flag |
+
+famdash also sets non-sensitive bookkeeping: `meta.integration` (`bukz`) and
+`meta.mode` (`stub` or `live`).
+
+Stub mode emits these kinds in that order, one each, and rotates if `limit`
+is larger than five. Placeholder copy has **no dollar amounts** and no
+invented balances.
+
+Items with a missing or unknown kind are dropped. They are not relabeled.
+
+#### Projection rules (v0)
+
+- **No `$` and no money figures** in `title` or `summary`. Strip or drop
+  upstream amounts. Do not replace them with invented numbers.
+- **No PII** in `title`, `summary`, or `meta`: no emails, names, account
+  numbers, API keys, or tokens.
+- `meta.liabilityWatch` may be kept only as the flag string `"true"` or
+  `"false"`. Do **not** show liability text in title or summary.
+- Ignore unknown upstream fields (forward-compatible). The producer may add
+  fields without a famdash release.
+
+| Concern | Owner |
+|---------|--------|
+| Domain source-of-truth (finance) and versioned feed API | **Bukz** |
+| Projection into dashboard items (`FeedItem` / `FeedSnapshot`) | **famdash** |
+| Auth, allowlist, permissions for who sees the dashboard | **famdash** |
 
 ## Relationship to other docs
 

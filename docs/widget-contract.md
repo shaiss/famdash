@@ -73,7 +73,7 @@ while still composing into one dashboard. See
 ## Not the same as feed ingest (Contract C)
 
 The MVP dashboard also consumes **external feeds** via a typed `FeedClient`
-(today: FamPoll live, bukz stub). That is a **host projection / Harvester-style
+(today: FamPoll and Bukz, both env-gated live). That is a **host projection / Harvester-style
 keyed feed**, not a first-class widget-app publish path.
 
 | Concern | Doc | Versioning |
@@ -94,5 +94,5 @@ is a separate app and can coexist.
   runtime).
 - Versioning strategy for evolving the contract without breaking published
   widgets.
-- (Separate track) Live bukz FeedClient — see [`feeds.md`](feeds.md); does not
+- Live Bukz FeedClient is env-gated — see [`feeds.md`](feeds.md); it does not
   unblock widget-contract design.

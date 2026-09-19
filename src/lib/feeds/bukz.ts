@@ -43,6 +43,12 @@ const SAFE_TITLE_WORDS = new Set([
   "item",
 ]);
 
+/** Words that are not personal names, so they do not start a name run. */
+const NAME_GLUE = /^[\s'’\-]+$/;
+
+const MONEY_TERMS =
+  "balance|balances|amount|amounts|total|spent|paid|due|remaining|shortfall|surplus|owed|saved|cost|costs|price|savings|saving|income|expense|expenses|outflow|inflow|deposit|withdrawal|payment|payments|fee|fees|interest|principal|debt|credit|debit|funds|fund|deficit|net|gross|worth|allocation|transfer|payroll|rent|mortgage|invoice";
+
 type BukzCredentials = {
   baseUrl: string;
   apiKey: string;
@@ -104,28 +110,89 @@ function stripLiabilityText(text: string): string {
   return kept.join(" ").replace(/\bliabilit(?:y|ies)(?:\s+watch)?\b/gi, "");
 }
 
-function stripPii(text: string): string {
-  return text
-    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "")
-    .replace(
-      /\b(?:name|payee|account holder|owner|member)\s*:\s*[^,.;\n]+/gi,
-      "",
-    )
-    .replace(
-      /\b(?:account|acct|a\/c)(?:\s*(?:number|no\.?|#))?\s*[:#-]?\s*\d[\d\s-]{2,}\d/gi,
-      "",
-    )
-    .replace(/\b(?:\d[ -]?){7,}\d\b/g, "")
-    .replace(/\b\*{2,}\d{2,}\b/g, "")
-    .replace(/\b(?:sk|pk|rk)_(?:live|test)_[A-Za-z0-9]+\b/g, "")
-    .replace(/\bBearer\s+\S+/gi, "")
-    .replace(/\b[A-Za-z0-9_-]{32,}\b/g, "")
-    .replace(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,2}\b/g, (match) => {
-      const safe = match
-        .split(/\s+/)
-        .every((word) => SAFE_TITLE_WORDS.has(word.toLowerCase()));
-      return safe ? match : "";
+/**
+ * Drop unlabelled 2+ word names in any casing.
+ * Allowlisted Bukz title words (Cash outlook, Bill coverage, …) stay.
+ */
+function stripUnlabelledNames(text: string): string {
+  const wordRe = /\b[A-Za-z]+\b/g;
+  const words: { start: number; end: number }[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = wordRe.exec(text)) !== null) {
+    words.push({
+      start: match.index,
+      end: match.index + match[0].length,
     });
+  }
+
+  const groups: number[][] = [];
+  for (let index = 0; index < words.length; index += 1) {
+    const previous = words[index - 1];
+    const gap = previous ? text.slice(previous.end, words[index].start) : "";
+    if (previous && NAME_GLUE.test(gap)) {
+      groups[groups.length - 1].push(index);
+    } else {
+      groups.push([index]);
+    }
+  }
+
+  const drop = new Set<number>();
+  for (const group of groups) {
+    let index = 0;
+    while (index < group.length) {
+      const nameLike = (wordIndex: number) =>
+        !SAFE_TITLE_WORDS.has(text.slice(words[group[wordIndex]].start, words[group[wordIndex]].end).toLowerCase());
+      if (!nameLike(index)) {
+        index += 1;
+        continue;
+      }
+      let end = index;
+      while (end < group.length && nameLike(end)) {
+        end += 1;
+      }
+      if (end - index >= 2) {
+        for (let cursor = index; cursor < end; cursor += 1) {
+          drop.add(group[cursor]);
+        }
+      }
+      index = end;
+    }
+  }
+
+  if (drop.size === 0) {
+    return text;
+  }
+
+  let out = "";
+  let cursor = 0;
+  for (let index = 0; index < words.length; index += 1) {
+    if (!drop.has(index)) {
+      continue;
+    }
+    out += text.slice(cursor, words[index].start);
+    cursor = words[index].end;
+  }
+  return out + text.slice(cursor);
+}
+
+function stripPii(text: string): string {
+  return stripUnlabelledNames(
+    text
+      .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "")
+      .replace(
+        /\b(?:name|payee|account holder|owner|member)\s*:\s*[^,.;\n]+/gi,
+        "",
+      )
+      .replace(
+        /\b(?:account|acct|a\/c)(?:\s*(?:number|no\.?|#))?\s*[:#-]?\s*\d[\d\s-]{2,}\d/gi,
+        "",
+      )
+      .replace(/\b(?:\d[ -]?){7,}\d\b/g, "")
+      .replace(/\b\*{2,}\d{2,}\b/g, "")
+      .replace(/\b(?:sk|pk|rk)_(?:live|test)_[A-Za-z0-9]+\b/g, "")
+      .replace(/\bBearer\s+\S+/gi, "")
+      .replace(/\b[A-Za-z0-9_-]{32,}\b/g, ""),
+  );
 }
 
 function stripMoney(text: string): string {
@@ -141,11 +208,16 @@ function stripMoney(text: string): string {
     )
     .replace(/-?\s*[$€£¥]\s*-?\d[\d,]*(?:\.\d+)?/g, "")
     .replace(
-      /\b(?:balance|balances|amount|amounts|total|spent|paid|due|remaining|shortfall|surplus|owed|saved|cost|costs|price)\b\s*(?:of|by|is|:)?\s*-?\d[\d,]*(?:\.\d+)?/gi,
+      new RegExp(
+        `\\b(?:${MONEY_TERMS})\\b[^\\d\\n]{0,16}-?\\d[\\d,]*(?:\\.\\d+)?`,
+        "gi",
+      ),
       (match) => match.replace(/-?\d[\d,]*(?:\.\d+)?/g, ""),
     )
     .replace(/\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b/g, "")
-    .replace(/\b\d+\.\d{2}\b/g, "")
+    .replace(/\b\d+\.\d+\b/g, "")
+    // Bare integers, including amounts after terms the list still missed.
+    .replace(/-?\d[\d,]*/g, "")
     .replace(/[$€£¥]/g, "");
 }
 
@@ -168,7 +240,8 @@ function projectCopy(value: unknown): string | undefined {
   if (!cleaned) {
     return undefined;
   }
-  if (/[$€£¥@]/.test(cleaned) || /\d{6,}/.test(cleaned)) {
+  // v0: if a figure might remain, drop the field instead of guessing.
+  if (/[$€£¥@]/.test(cleaned) || /\d/.test(cleaned)) {
     return undefined;
   }
   return cleaned;

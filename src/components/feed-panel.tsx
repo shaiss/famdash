@@ -25,7 +25,13 @@ function formatWhen(iso: string): string {
   }
 }
 
-function kindLabel(meta: FeedSnapshot["items"][number]["meta"]): string | null {
+function kindLabel(
+  source: FeedSnapshot["source"],
+  meta: FeedSnapshot["items"][number]["meta"],
+): string | null {
+  if (source !== "bukz") {
+    return null;
+  }
   const kind = meta?.kind;
   if (!kind) {
     return null;
@@ -58,7 +64,7 @@ export function FeedPanel({ snapshot, heading }: FeedPanelProps) {
 
       <ul className="divide-y divide-[var(--line)]">
         {snapshot.items.map((item) => {
-          const kind = kindLabel(item.meta);
+          const kind = kindLabel(snapshot.source, item.meta);
           return (
           <li key={item.id} className="first:pt-0 last:pb-0">
             {item.href ? (

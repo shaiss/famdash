@@ -17,8 +17,9 @@ export default async function DashboardPage() {
           Family dashboard
         </h1>
         <p className="mt-2 max-w-2xl text-[var(--muted)]">
-          Clerk-gated surface with typed feeds. Bukz stays stubbed; FamPoll
-          goes live when FAMPOLL_API_BASE_URL and FAMPOLL_API_KEY are set.
+          Clerk-gated surface with typed feeds. Bukz and FamPoll each go
+          live when their API base URL and key are set; otherwise the panel
+          stays on placeholder items.
         </p>
       </div>
 

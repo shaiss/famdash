@@ -1,5 +1,14 @@
 import type { FeedSnapshot } from "@/lib/feeds";
 
+/** Display labels for locked Bukz v0 kinds. Unknown kinds are not rendered. */
+const BUKZ_KIND_LABELS: Record<string, string> = {
+  cash_outlook: "Cash outlook",
+  uncategorized: "Uncategorized",
+  bill_coverage: "Bill coverage",
+  budget_funding: "Budget funding",
+  variance_flag: "Variance flag",
+};
+
 type FeedPanelProps = {
   snapshot: FeedSnapshot;
   heading: string;
@@ -14,6 +23,14 @@ function formatWhen(iso: string): string {
   } catch {
     return iso;
   }
+}
+
+function kindLabel(meta: FeedSnapshot["items"][number]["meta"]): string | null {
+  const kind = meta?.kind;
+  if (!kind) {
+    return null;
+  }
+  return BUKZ_KIND_LABELS[kind] ?? null;
 }
 
 export function FeedPanel({ snapshot, heading }: FeedPanelProps) {
@@ -40,7 +57,9 @@ export function FeedPanel({ snapshot, heading }: FeedPanelProps) {
       </div>
 
       <ul className="divide-y divide-[var(--line)]">
-        {snapshot.items.map((item) => (
+        {snapshot.items.map((item) => {
+          const kind = kindLabel(item.meta);
+          return (
           <li key={item.id} className="first:pt-0 last:pb-0">
             {item.href ? (
               <a
@@ -50,6 +69,11 @@ export function FeedPanel({ snapshot, heading }: FeedPanelProps) {
                 target="_blank"
               >
                 <div>
+                  {kind ? (
+                    <p className="text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
+                      {kind}
+                    </p>
+                  ) : null}
                   <span className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">
                     {item.title}
                   </span>
@@ -69,6 +93,11 @@ export function FeedPanel({ snapshot, heading }: FeedPanelProps) {
             ) : (
               <div className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
                 <div>
+                  {kind ? (
+                    <p className="text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
+                      {kind}
+                    </p>
+                  ) : null}
                   <p className="font-medium text-[var(--ink)]">{item.title}</p>
                   {item.summary ? (
                     <p className="mt-1 max-w-prose text-sm text-[var(--muted)]">
@@ -85,7 +114,8 @@ export function FeedPanel({ snapshot, heading }: FeedPanelProps) {
               </div>
             )}
           </li>
-        ))}
+          );
+        })}
       </ul>
     </section>
   );

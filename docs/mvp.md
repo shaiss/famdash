@@ -11,7 +11,7 @@ Status of the first runnable dashboard shell. Complements
 | Styling | Tailwind CSS 4 |
 | Auth | Clerk (`@clerk/nextjs`) via `src/proxy.ts` + server checks |
 | Access control | Env allowlist: `ADMIN_EMAIL`, optional `ALLOWLIST_EMAILS` |
-| Feeds | Typed clients: **bukz** stub; **FamPoll** env-gated live (`FAMPOLL_API_*`) |
+| Feeds | Typed clients: **Bukz** and **FamPoll** env-gated live (`BUKZ_API_*`, `FAMPOLL_API_*`); stub if either var is missing |
 
 Default branch for this work: prefer reviewing against the docs branch /
 `main` as the team chooses; keep the repo **private**.
@@ -42,11 +42,10 @@ Partnership, ownership split, href rule C, and env fail-closed behavior:
 
 | Source | Module | Today |
 |--------|--------|-------|
-| bukz | `src/lib/feeds/bukz.ts` | Returns placeholder items (stub) |
+| bukz | `src/lib/feeds/bukz.ts` | Live when both `BUKZ_API_BASE_URL` and `BUKZ_API_KEY` are set; otherwise stub. v0 kinds only; no money figures or PII in the projection |
 | FamPoll | `src/lib/feeds/fampoll.ts` | Live when both `FAMPOLL_API_BASE_URL` and `FAMPOLL_API_KEY` are set; otherwise stub |
 
-Do not commit secrets or real emails. Bukz remains stubbed until its env path
-is implemented. Feed ingest (Contract C) is separate from the TBD
+Do not commit secrets or real emails. Feed ingest (Contract C) is separate from the TBD
 [widget contract](widget-contract.md).
 
 ## Relationship to the long-term architecture
@@ -54,7 +53,7 @@ is implemented. Feed ingest (Contract C) is separate from the TBD
 The MVP is intentionally a **thin host**:
 
 - Dashboard shell + auth gate
-- FeedClient adapters for external partners (FamPoll live; bukz stub) — not
+- FeedClient adapters for external partners (FamPoll and Bukz, both env-gated live) — not
   first-class widget apps yet
 - Existing docs remain the source of truth for standalone apps, agents, and the
   widget contract
@@ -69,7 +68,7 @@ stretch FeedClient into a parallel host integration.
    before first deploy. Do not treat a Preview URL as done until cleared.
 2. Create a Clerk application; put real keys only in local/hosting env.
 3. Set `ADMIN_EMAIL` / `ALLOWLIST_EMAILS` in hosting env (never in git).
-4. Replace the bukz stub with a live client behind the same interface (FamPoll already env-gated).
+4. Bukz live client is env-gated behind `BUKZ_API_*` (same fail-closed pattern as FamPoll). v0 kind map is in [`feeds.md`](feeds.md).
 5. Flesh out widget-contract schema + discovery (see
    [`widget-contract.md`](widget-contract.md)).
 6. Stand up first standalone apps (Money, School, …) per

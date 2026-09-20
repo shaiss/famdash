@@ -27,9 +27,9 @@ const KIND_SET = new Set<string>(BUKZ_V0_KINDS);
  */
 const THIS_WEEK_KIND_ORDER: readonly BukzV0Kind[] = [
   "uncategorized",
+  "budget_funding",
   "cash_outlook",
   "bill_coverage",
-  "budget_funding",
   "variance_flag",
 ];
 

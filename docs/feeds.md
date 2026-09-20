@@ -177,8 +177,8 @@ Items with a missing or unknown kind are dropped. They are not relabeled.
 famdash-only projection. After v0 copy rules, Bukz items (live and stub) are
 ordered for an easy family **this week** scan:
 
-1. Priority kinds first: `uncategorized`, `cash_outlook`, `bill_coverage`,
-   `budget_funding`.
+1. Priority kinds first: `uncategorized`, `budget_funding`, `cash_outlook`,
+   `bill_coverage`.
 2. Then `variance_flag`.
 3. Within a kind, `occurredAt` descending (newest first).
 

@@ -17,14 +17,15 @@ export default async function DashboardPage() {
           Family dashboard
         </h1>
         <p className="mt-2 max-w-2xl text-[var(--muted)]">
-          Clerk-gated surface with typed feeds. Bukz and FamPoll each go
-          live when their API base URL and key are set; otherwise the panel
-          stays on placeholder items.
+          Clerk-gated surface with typed feeds. Bukz is the family this-week
+          view. FamPoll stays a recent poll feed. Each goes live when its API
+          base URL and key are set; otherwise the panel stays on placeholder
+          items.
         </p>
       </div>
 
       <div className="space-y-10 rounded-2xl border border-[var(--line)] bg-[var(--surface)]/80 p-6 shadow-[0_1px_0_rgba(21,36,31,0.04)] sm:p-8">
-        <FeedPanel snapshot={bukz} heading="Bukz" />
+        <FeedPanel snapshot={bukz} heading="This week" />
         <FeedPanel snapshot={fampoll} heading="FamPoll" />
       </div>
     </main>

@@ -21,6 +21,22 @@ export const BUKZ_KIND_LABELS: Record<BukzV0Kind, string> = {
 
 const KIND_SET = new Set<string>(BUKZ_V0_KINDS);
 
+/**
+ * This-week family view order. Priority kinds first, then variance flags.
+ * Not a new kind list — same locked v0 kinds, different projection order.
+ */
+const THIS_WEEK_KIND_ORDER: readonly BukzV0Kind[] = [
+  "uncategorized",
+  "cash_outlook",
+  "bill_coverage",
+  "budget_funding",
+  "variance_flag",
+];
+
+const THIS_WEEK_KIND_RANK = new Map<string, number>(
+  THIS_WEEK_KIND_ORDER.map((kind, index) => [kind, index]),
+);
+
 const SAFE_TITLE_WORDS = new Set([
   "cash",
   "outlook",
@@ -275,9 +291,28 @@ function projectOccurredAt(value: unknown): string {
   return new Date().toISOString();
 }
 
+function occurredAtMillis(iso: string): number {
+  const parsed = Date.parse(iso);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+/** Priority kinds, then variance flags; newest `occurredAt` first within a kind. */
+function orderForThisWeek(items: FeedItem[]): FeedItem[] {
+  return [...items].sort((a, b) => {
+    const aRank =
+      THIS_WEEK_KIND_RANK.get(a.meta?.kind ?? "") ?? THIS_WEEK_KIND_ORDER.length;
+    const bRank =
+      THIS_WEEK_KIND_RANK.get(b.meta?.kind ?? "") ?? THIS_WEEK_KIND_ORDER.length;
+    if (aRank !== bRank) {
+      return aRank - bRank;
+    }
+    return occurredAtMillis(b.occurredAt) - occurredAtMillis(a.occurredAt);
+  });
+}
+
 function stubItems(limit: number): FeedItem[] {
   const now = Date.now();
-  return Array.from({ length: limit }, (_, index) => {
+  const stubs = Array.from({ length: limit }, (_, index) => {
     const kind = BUKZ_V0_KINDS[index % BUKZ_V0_KINDS.length];
     return {
       id: `bukz-stub-${index + 1}`,
@@ -290,6 +325,7 @@ function stubItems(limit: number): FeedItem[] {
       meta: { integration: "bukz", mode: "stub", kind },
     };
   });
+  return orderForThisWeek(stubs);
 }
 
 function errorItems(message: string): FeedItem[] {
@@ -384,7 +420,7 @@ async function fetchLiveItems(
     .map((entry, index) => normalizeItem(entry, index))
     .filter((entry): entry is FeedItem => entry !== null);
 
-  return items.slice(0, limit);
+  return orderForThisWeek(items).slice(0, limit);
 }
 
 /**
@@ -392,6 +428,7 @@ async function fetchLiveItems(
  * Live path when BUKZ_API_BASE_URL and BUKZ_API_KEY are both set;
  * otherwise fails closed to stub items (never throws for missing env).
  * v0 projection never emits money figures, PII, or liability prose.
+ * Returned items are ordered for the this-week family view.
  */
 export class BukzFeedClient implements FeedClient {
   readonly source = "bukz" as const;
@@ -426,7 +463,7 @@ export async function fetchBukzSnapshot(
       items,
       fetchedAt,
       mode: "stub",
-      note: "Using stub client. Set BUKZ_API_BASE_URL and BUKZ_API_KEY for live feed.",
+      note: "This week is on placeholder items. Set BUKZ_API_BASE_URL and BUKZ_API_KEY for the live feed.",
     };
   }
 
@@ -437,7 +474,7 @@ export async function fetchBukzSnapshot(
       items,
       fetchedAt,
       mode: "live",
-      note: "Live Bukz feed.",
+      note: "Live Bukz feed for this week.",
     };
   } catch {
     return {
@@ -445,7 +482,7 @@ export async function fetchBukzSnapshot(
       items: errorItems("Live Bukz feed request failed."),
       fetchedAt,
       mode: "live",
-      note: "Live Bukz credentials are set, but the upstream feed request failed.",
+      note: "This week could not load the live Bukz feed.",
     };
   }
 }

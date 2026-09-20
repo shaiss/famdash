@@ -154,9 +154,10 @@ one of:
 famdash also sets non-sensitive bookkeeping: `meta.integration` (`bukz`) and
 `meta.mode` (`stub` or `live`).
 
-Stub mode emits these kinds in that order, one each, and rotates if `limit`
-is larger than five. Placeholder copy has **no dollar amounts** and no
-invented balances.
+Stub mode still emits these kinds in that table order, one each, and rotates
+if `limit` is larger than five. The list returned to the dashboard is then
+reordered for the this-week view below. Placeholder copy has **no dollar
+amounts** and no invented balances.
 
 Items with a missing or unknown kind are dropped. They are not relabeled.
 
@@ -170,6 +171,25 @@ Items with a missing or unknown kind are dropped. They are not relabeled.
   `"false"`. Do **not** show liability text in title or summary.
 - Ignore unknown upstream fields (forward-compatible). The producer may add
   fields without a famdash release.
+
+#### This-week family view
+
+famdash-only projection. After v0 copy rules, Bukz items (live and stub) are
+ordered for an easy family **this week** scan:
+
+1. Priority kinds first: `uncategorized`, `cash_outlook`, `bill_coverage`,
+   `budget_funding`.
+2. Then `variance_flag`.
+3. Within a kind, `occurredAt` descending (newest first).
+
+Ordering happens before the `limit` slice. No new kinds. FamPoll is not
+reordered.
+
+The Bukz panel heading is **This week**. Panel copy calls it a family view
+from Bukz and states that no balances are shown. Snapshot notes say this
+week on the live, stub, and error paths. Those notes do not add dollar
+amounts, balances, or PII. Kind labels still render only when
+`snapshot.source === "bukz"`. `meta.liabilityWatch` stays a meta flag only.
 
 | Concern | Owner |
 |---------|--------|

@@ -40,6 +40,9 @@ function kindLabel(
 }
 
 export function FeedPanel({ snapshot, heading }: FeedPanelProps) {
+  const isBukz = snapshot.source === "bukz";
+  const title = isBukz ? "This week" : heading;
+
   return (
     <section
       aria-labelledby={`${snapshot.source}-heading`}
@@ -51,8 +54,13 @@ export function FeedPanel({ snapshot, heading }: FeedPanelProps) {
             id={`${snapshot.source}-heading`}
             className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-[var(--ink)]"
           >
-            {heading}
+            {title}
           </h2>
+          {isBukz ? (
+            <p className="mt-1 max-w-prose text-sm text-[var(--muted)]">
+              Family view from Bukz. No balances.
+            </p>
+          ) : null}
           <p className="mt-1 text-sm text-[var(--muted)]">
             {snapshot.note ?? `${snapshot.mode} feed`}
           </p>

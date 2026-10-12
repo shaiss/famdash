@@ -4,7 +4,7 @@
 apps**. Each app harvests its own data, works on its own, and publishes one or
 more **widgets** onto a shared **dashboard**.
 
-This repo is **private**. Do not open it publicly unless Shai explicitly does.
+This repo is **public**. The app is live at <https://famdash-inky.vercel.app>.
 
 ## Current status (MVP)
 
@@ -14,7 +14,7 @@ Next.js App Router dashboard shell with:
 - **Env allowlist** via `ADMIN_EMAIL` (+ optional `ALLOWLIST_EMAILS`)
 - **Typed feed clients** — Bukz and FamPoll live behind optional `BUKZ_API_*` / `FAMPOLL_API_*` env vars (fail closed to placeholders if unset)
 
-Preview / Vercel deploy is **deferred** until Cipher (Security) reviews.
+Deployed on Vercel at <https://famdash-inky.vercel.app> after Cipher (Security) review.
 
 ## Local setup
 
@@ -93,8 +93,8 @@ as external feeds on the dashboard shell — see [`docs/feeds.md`](docs/feeds.md
 
 - No PII, real emails, or API secrets in source or docs — placeholders only
 - Allowlist is env-only
-- Cipher (Security) must review before first deploy
-- Keep the repository private unless Shai opens it
+- Secrets live in Vercel env only, never in git
+- Cipher (Security) reviews security-sensitive changes before they ship
 
 ---
 
